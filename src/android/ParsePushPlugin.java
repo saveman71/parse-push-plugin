@@ -13,10 +13,15 @@ import org.json.JSONObject;
 import org.json.JSONException;
 
 import com.parse.Parse;
+import com.parse.ParseUser;
+import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseInstallation;
 
 import android.util.Log;
+
+import java.lang.System;
+import android.os.Build;
 
 public class ParsePushPlugin extends CordovaPlugin {
     public static final String ACTION_GET_INSTALLATION_ID = "getInstallationId";
@@ -25,6 +30,7 @@ public class ParsePushPlugin extends CordovaPlugin {
     public static final String ACTION_SUBSCRIBE = "subscribe";
     public static final String ACTION_UNSUBSCRIBE = "unsubscribe";
     public static final String ACTION_REGISTER_CALLBACK = "registerCallback";
+    public static final String ACTION_LINK_USER = "linkUser";
 
     private static CallbackContext gEventCallback = null;
 
@@ -59,6 +65,10 @@ public class ParsePushPlugin extends CordovaPlugin {
         }
         if (action.equals(ACTION_UNSUBSCRIBE)) {
             this.unsubscribe(args.getString(0), callbackContext);
+            return true;
+        }
+        if (action.equals(ACTION_LINK_USER)) {
+            this.linkUser(args.getString(0), callbackContext);
             return true;
         }
         return false;
@@ -103,6 +113,24 @@ public class ParsePushPlugin extends CordovaPlugin {
 
     private void unsubscribe(final String channel, final CallbackContext callbackContext) {
     	ParsePush.unsubscribeInBackground(channel);
+        callbackContext.success();
+    }
+
+    private void linkUser(final String userId, final CallbackContext callbackContext) {
+        String os = System.getProperty("os.version");
+        String api = android.os.Build.VERSION.SDK;
+        String model = android.os.Build.MODEL;
+        String deviceModel = model + "|" + os + "|" + api;
+
+        ParseObject user = ParseObject.createWithoutData(ParseUser.class, userId);
+        ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+        installation.put("User", user);
+        installation.put("deviceModel", deviceModel);
+        installation.put("badge", 0);
+        installation.saveInBackground();
+
+        ParsePush.subscribeInBackground("general");
+
         callbackContext.success();
     }
 

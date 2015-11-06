@@ -1,3 +1,11 @@
+Hey you!
+========
+This is for private use only.
+You can still take a look to the code, but I doubt you will ever need our modifications!
+Please see upstream for installing this plugin.
+
+*ALL THE MODIFICATIONS ARE ANDROID ONLY*
+
 Phonegap Parse.com Plugin
 =========================
 
@@ -96,7 +104,7 @@ Installation
 ------------
 
 ```
-cordova plugin add https://github.com/taivo/parse-push-plugin
+cordova plugin add https://github.com/saveman71/parse-push-plugin
 ```
 
 
@@ -196,6 +204,12 @@ ParsePushPlugin.subscribe('SampleChannel', function(msg) {
 });
 
 ParsePushPlugin.unsubscribe('SampleChannel', function(msg) {
+    alert('OK');
+}, function(e) {
+    alert('error');
+});
+
+ParsePushPlugin.linkUser('userId', function(msg) {
     alert('OK');
 }, function(e) {
     alert('error');
